@@ -1,0 +1,91 @@
+﻿@page "/Students/Edit/{Id}"
+<PageTitle>Students-Edit</PageTitle>
+@inject StudentsDataServices studentsDataServices
+@inject NavigationManager navigate
+<h3>Add New Student</h3>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    New Student Form
+                </div>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@UpdateStudent">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Student Name</label>
+                                <input type="text" id="txtClassesName" class="form-control" @bind-value="@UpdateStudent.Name" required="required" />
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Class</label>
+                                <select id="ddlClasses" @bind="@UpdateStudent.class_id" class="form-select">
+                                    <option value="" disabled="disabled">--Select--</option>
+                                    @foreach (var item in classes)
+                                    {
+                                        <option value="@item.Id">@item.class_name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Country</label>
+                                <select id="ddlCountries" @bind="@UpdateStudent.country_id" class="form-select">
+                                    <option value="" disabled="disabled">--Select--</option>
+                                    @foreach (var item in countries)
+                                    {
+                                        <option value="@item.Id">@item.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Classes Name</label>
+                                <input type="date" id="txtDateOfBirth" class="form-control" @bind-value="@UpdateStudent.Date_of_Birth" required="required" />
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <input type="button" @onclick="@UpdateStudentAsync" class="btn btn-success" value="Submite" />
+                                <a href="/Students">Back to List</a>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    public StudentsData UpdateStudent { get; set; } = new StudentsData();
+    List<ClassesData> classes = new List<ClassesData>();
+    List<CountriesData> countries = new List<CountriesData>();
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        classes = await studentsDataServices.getClassesAsync();
+        countries = await studentsDataServices.getCountriesAsync();
+        await RefreshStudent();
+    }
+
+    private async Task RefreshStudent() => UpdateStudent = await studentsDataServices.getStudentAsync(Int32.Parse(Id));
+    private async Task UpdateStudentAsync()
+    {
+        if (await studentsDataServices.updateStudentAsync(UpdateStudent))
+            navigate.NavigateTo("Students");
+    }
+}
+

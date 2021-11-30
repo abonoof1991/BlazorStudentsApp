@@ -1,0 +1,82 @@
+﻿@page "/Classes/"
+<PageTitle>Students-Index</PageTitle>
+@inject ClassesDataServices classesDataServices
+@inject NavigationManager navigate
+<h3>Classes List</h3>
+<div class="row">
+    <div class="col-lg-12">
+    </div>
+</div>
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">
+            Countries List Grid
+            <a href="/Classes/Create" class="btn btn-success" style="float:right;">
+                <i class="oi oi-plus"></i> Create
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr style="text-align:center;">
+                                <th>#</th>
+                                <th>Class Name</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (classes.Any())
+                            {
+                                int sort = 1;
+                                @foreach (var item in classes)
+                                {
+                                    <tr style="text-align:center;">
+                                        <td>@sort</td>
+                                        <td>@item.class_name</td>
+                                        <td>
+                                            <a href="/Classes/Edit/@item.Id" class="btn btn-primary">
+                                                <i class="oi oi-eye"></i> Edit
+                                            </a>
+                                            <button type="button" class="btn btn-danger" @onclick="(e=> delClassAsync(item))">
+                                                <i class="oi oi-delete"></i> Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    sort++;
+                                }
+                            }
+                            else
+                            {
+                                <tr style="text-align:center;">
+                                    <td colspan="3">
+                                        No Rows Found
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@code {
+    List<ClassesData> classes = new List<ClassesData>();
+
+    protected override async Task OnInitializedAsync() => await RefreshList();
+
+    private async Task RefreshList()
+    {
+        classes = await classesDataServices.getAllClassesAsync();
+    }
+
+    private async Task delClassAsync(ClassesData classData)
+    {
+        await classesDataServices.deleteClassAsync(classData);
+        await RefreshList();
+    }
+}

@@ -1,0 +1,57 @@
+﻿@page "/Countries/Edit/{Id}"
+<PageTitle>Countries-Edit</PageTitle>
+@inject CountriesDataServices countriesDataServices
+@inject NavigationManager navigate
+<h3>Edit Country</h3>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <div  class="card-title">
+                    Edit Country Form
+                </div>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@UpdateCountry">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Country Name</label>
+                                <input type="text" id="txtClassesName" class="form-control" @bind="@UpdateCountry.Name" required />
+                            </div>
+                        </div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <input type="button" class="btn btn-success" @onclick="@UpdateCountryDataAsync" value="Submite" />
+                                <a href="/Countries">Back to List</a>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        <div class="form-btn-group">
+        </div>
+    </div>
+</div>
+@code {
+    CountriesData UpdateCountry { get; set; } = new CountriesData();
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await RefreshCountry();
+    }
+
+    private async Task RefreshCountry() => UpdateCountry = await countriesDataServices.getCountryAsync(Int32.Parse(Id));
+
+    private async void UpdateCountryDataAsync()
+    {
+        if (await countriesDataServices.updateCountryAsync(UpdateCountry))
+            navigate.NavigateTo("Countries");
+    }
+}
+

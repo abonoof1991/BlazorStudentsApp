@@ -1,0 +1,47 @@
+﻿@page "/Classes/Create"
+<PageTitle>Students-Create</PageTitle>
+@inject ClassesDataServices classesDataServices
+@inject NavigationManager navigate
+<h3>Add New Class</h3>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    New Class Form
+                </div>
+            </div>
+            <div class="card-body">
+                <EditForm Model="@NewCkass">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Classes Name</label>
+                                <input type="text" id="txtClassesName" class="form-control" @bind-value="@NewCkass.class_name" required="required" />
+                            </div>
+                        </div>
+                    </div><br />
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <input type="button" @onclick="@AddNewClassAsync" class="btn btn-success" value="Submite" />
+                                <a href="/Classes">Back to List</a>
+                            </div>
+                        </div>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+        <div class="form-btn-group">
+        </div>
+    </div>
+</div>
+@code {
+    public ClassesData NewCkass { get; set; } = new ClassesData();
+
+    private async Task AddNewClassAsync()
+    {
+        if (await classesDataServices.setClassDataAsync(NewCkass))
+            navigate.NavigateTo("Classes");
+    }
+}
